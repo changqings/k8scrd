@@ -1,4 +1,4 @@
-module github.com/Tsingshen/k8s-crd
+module github.com/Tsingshen/k8scrd
 
 go 1.18
 
