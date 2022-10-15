@@ -4,17 +4,15 @@ import (
 	"context"
 	"fmt"
 
-	k8scrdclient "github.com/Tsingshen/k8scrd/client"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	p8smonitorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/dynamic"
 )
 
-func GetP8sRule(name, ns string) error {
-	dynaClient := k8scrdclient.GetDynamicClient()
+func GetP8sRule(dI dynamic.Interface, name, ns string) error {
 	// get gvr prometheusrulers
 	gvr := schema.GroupVersionResource{
 		Group:    "monitoring.coreos.com",
@@ -22,7 +20,7 @@ func GetP8sRule(name, ns string) error {
 		Resource: "prometheusrules",
 	}
 
-	unStructOjb, err := dynaClient.Resource(gvr).Namespace(ns).List(context.Background(), metav1.ListOptions{})
+	unStructOjb, err := dI.Resource(gvr).Namespace(ns).List(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
@@ -35,12 +33,12 @@ func GetP8sRule(name, ns string) error {
 
 }
 
-func GetP8sRuleList() *p8smonitorv1.PrometheusRuleList {
+func GetP8sRuleList(rClient client.Client) *p8smonitorv1.PrometheusRuleList {
 
-	ruleScheme := runtime.NewScheme()
-	p8smonitorv1.AddToScheme(ruleScheme)
+	// ruleScheme := runtime.NewScheme()
+	// p8smonitorv1.AddToScheme(ruleScheme)
 
-	rClient := k8scrdclient.GetRuntimeClient(ruleScheme)
+	// rClient := k8scrdclient.GetRuntimeClient(ruleScheme)
 
 	p8sRule := &p8smonitorv1.PrometheusRuleList{}
 	err := rClient.List(context.TODO(), p8sRule, client.InNamespace("prometheus"))
