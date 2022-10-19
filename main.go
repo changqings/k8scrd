@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	crdClient "github.com/Tsingshen/k8scrd/Client"
+	crdClient "github.com/Tsingshen/k8scrd/client"
 	"github.com/Tsingshen/k8scrd/crd"
 	"github.com/Tsingshen/k8scrd/prometheus"
 	p8smonitorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
