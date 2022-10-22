@@ -66,4 +66,39 @@ func main() {
 		}
 	}
 
+	// create vs
+
+	vsUnObj := &unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "networking.istio.io/v1beta1",
+			"kind":       "VirtualService",
+			"metadata": map[string]string{
+				"name":      "test-crd-vs",
+				"namespace": "shencq",
+			},
+			"spec": map[string]interface{}{
+				"gateways": []string{"mesh"},
+				"hosts":    []string{"test.abc.com"},
+				"http": []map[string]interface{}{
+					{
+						"name": "test-crd" + "-stable",
+						"route": []map[string]interface{}{
+							{
+								"destination": map[string]string{
+									"host":   "test-crd-vs.shencq.svc.cluster.local",
+									"subset": "stable",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	_, err1 := vs.Create(context.Background(), vsUnObj, metav1.CreateOptions{})
+	if err1 != nil {
+		panic(err1)
+	}
+
 }

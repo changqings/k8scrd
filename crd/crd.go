@@ -29,7 +29,7 @@ func (c *Crds) List(ctx context.Context, opts metav1.ListOptions) (*unstructured
 func (c *Crds) Create(ctx context.Context, data interface{}, opts metav1.CreateOptions) (*unstructured.Unstructured, error) {
 	obj, ok := data.(*unstructured.Unstructured)
 	if !ok {
-		return nil, fmt.Errorf("can not parse data =%v to unstrured obj", data)
+		return nil, fmt.Errorf("can not parse data =%v to *unstructured.Unstructured", data)
 	}
 
 	return c.Client.Resource(c.Gvr).Namespace(c.Namespace).Create(ctx, obj, opts)
@@ -39,7 +39,7 @@ func (c *Crds) Update(ctx context.Context, data interface{}, opts metav1.UpdateO
 	*unstructured.Unstructured, error) {
 	obj, ok := data.(*unstructured.Unstructured)
 	if !ok {
-		return nil, fmt.Errorf("can not parse data =%v to unstrured obj", data)
+		return nil, fmt.Errorf("can not parse data =%v to *unstructured.Unstructured obj", data)
 	}
 	return c.Client.Resource(c.Gvr).Update(ctx, obj, opts)
 }
