@@ -15,30 +15,7 @@ import (
 )
 
 func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
-	var kubeconfig string
-	var config *rest.Config
-
-	var err error
-	if os.Getenv("KUBECONFIG") != "" {
-		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
-	} else if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
-	}
-
-	if fileExist(kubeconfig) {
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
-		if err != nil {
-			panic(err.Error())
-		}
-	} else {
-		// creates the in-cluster config
-		config, err = rest.InClusterConfig()
-		if err != nil {
-			panic(err.Error())
-		}
-	}
+	config := GetRestConfig()
 	// creates the clientset, default behavor
 
 	client, err := runtimeclient.New(config, runtimeclient.Options{
@@ -51,18 +28,11 @@ func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
 }
 
 func GetDynamicClientWithContext(contextName string) dynamic.Interface {
-	var kubeconfig string
 	var config *rest.Config
 
 	var err error
-	if os.Getenv("KUBECONFIG") != "" {
-		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
-	} else if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
-	}
 
+	kubeconfig := GetKubeConfig()
 	if fileExist(kubeconfig) {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if contextName != "" {
@@ -93,30 +63,7 @@ func GetDynamicClientWithContext(contextName string) dynamic.Interface {
 	return dynaClient
 }
 func GetDynamicClient() dynamic.Interface {
-	var kubeconfig string
-	var config *rest.Config
-
-	var err error
-	if os.Getenv("KUBECONFIG") != "" {
-		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
-	} else if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
-	}
-
-	if fileExist(kubeconfig) {
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
-		if err != nil {
-			panic(err.Error())
-		}
-	} else {
-		// creates the in-cluster config
-		config, err = rest.InClusterConfig()
-		if err != nil {
-			panic(err.Error())
-		}
-	}
+	config := GetRestConfig()
 	// creates the clientset, default behavor
 
 	dynaClient, err := dynamic.NewForConfig(config)
@@ -127,18 +74,10 @@ func GetDynamicClient() dynamic.Interface {
 }
 
 func GetClientWithContext(contextName string) *kubernetes.Clientset {
-	var kubeconfig string
 	var config *rest.Config
-
 	var err error
-	if os.Getenv("KUBECONFIG") != "" {
-		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
-	} else if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
-		kubeconfig = ""
-	}
 
+	kubeconfig := GetKubeConfig()
 	if fileExist(kubeconfig) {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if contextName != "" {
@@ -169,10 +108,19 @@ func GetClientWithContext(contextName string) *kubernetes.Clientset {
 	return clientset
 }
 func GetClient() *kubernetes.Clientset {
-	var kubeconfig string
-	var config *rest.Config
+	config := GetRestConfig()
+	// creates the clientset, default behavor
 
-	var err error
+	clientset, err := kubernetes.NewForConfig(config)
+	if err != nil {
+		panic(err.Error())
+	}
+	return clientset
+}
+
+func GetKubeConfig() string {
+	var kubeconfig string
+
 	if os.Getenv("KUBECONFIG") != "" {
 		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
 	} else if home := homedir.HomeDir(); home != "" {
@@ -181,25 +129,30 @@ func GetClient() *kubernetes.Clientset {
 		kubeconfig = ""
 	}
 
+	return kubeconfig
+
+}
+
+func GetRestConfig() *rest.Config {
+
+	kubeconfig := GetKubeConfig()
+	var config *rest.Config
+	var err error
+
 	if fileExist(kubeconfig) {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
-			panic(err.Error())
+			panic(err)
 		}
 	} else {
 		// creates the in-cluster config
 		config, err = rest.InClusterConfig()
 		if err != nil {
-			panic(err.Error())
+			panic(err)
 		}
 	}
-	// creates the clientset, default behavor
 
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
-	return clientset
+	return config
 }
 
 func fileExist(path string) bool {
