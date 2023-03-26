@@ -47,12 +47,6 @@ func GetDynamicClientWithContext(contextName string) dynamic.Interface {
 		if err != nil {
 			panic(err.Error())
 		}
-	} else {
-		// creates the in-cluster config
-		config, err = rest.InClusterConfig()
-		if err != nil {
-			panic(err.Error())
-		}
 	}
 	// creates the clientset, default behavor
 
@@ -89,12 +83,6 @@ func GetClientWithContext(contextName string) *kubernetes.Clientset {
 				klog.Errorf("Switch kubeconfig context err: ", err)
 			}
 		}
-		if err != nil {
-			panic(err.Error())
-		}
-	} else {
-		// creates the in-cluster config
-		config, err = rest.InClusterConfig()
 		if err != nil {
 			panic(err.Error())
 		}
