@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
+	istioVersioned "istio.io/client-go/pkg/clientset/versioned"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
@@ -13,6 +14,10 @@ import (
 	"k8s.io/klog/v2"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+func GetIstioClient() *istioVersioned.Clientset {
+	return istioVersioned.NewForConfigOrDie(GetRestConfig())
+}
 
 func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
 	config := GetRestConfig()
