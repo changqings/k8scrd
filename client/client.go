@@ -72,11 +72,11 @@ func GetDynamicClient() dynamic.Interface {
 	return dynaClient
 }
 
-func GetClientWithContext(contextName string) *kubernetes.Clientset {
+func GetClientWithContext(contextName string, configPath string) *kubernetes.Clientset {
 	var config *rest.Config
 	var err error
 
-	kubeconfig := GetKubeConfig()
+	kubeconfig := GetKubeConfig(configPath)
 	if fileExist(kubeconfig) {
 		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if contextName != "" {
@@ -111,10 +111,12 @@ func GetClient() *kubernetes.Clientset {
 	return clientset
 }
 
-func GetKubeConfig() string {
+func GetKubeConfig(configPath ...string) string {
 	var kubeconfig string
 
-	if os.Getenv("KUBECONFIG") != "" {
+	if len(configPath) == 1 {
+		kubeconfig = configPath[0]
+	} else if os.Getenv("KUBECONFIG") != "" {
 		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
 	} else if home := homedir.HomeDir(); home != "" {
 		kubeconfig = filepath.Join(home, ".kube", "config")
