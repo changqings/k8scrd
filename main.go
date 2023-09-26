@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	crdClient "github.com/Tsingshen/k8scrd/client"
-	"github.com/Tsingshen/k8scrd/crd"
-	"github.com/Tsingshen/k8scrd/prometheus"
+	crdClient "github.com/meiyingshe/k8scrd/client"
+	"github.com/meiyingshe/k8scrd/crd"
+	"github.com/meiyingshe/k8scrd/prometheus"
 	p8smonitorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
