@@ -1,4 +1,4 @@
-module github.com/Tsingshen/k8scrd
+module github.com/meiyingshe/k8scrd
 
 go 1.19
 
