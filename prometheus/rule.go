@@ -20,12 +20,12 @@ func GetP8sRule(dI dynamic.Interface, name, ns string) error {
 		Resource: "prometheusrules",
 	}
 
-	unStructOjb, err := dI.Resource(gvr).Namespace(ns).List(context.Background(), metav1.ListOptions{})
+	unStructObj, err := dI.Resource(gvr).Namespace(ns).List(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}
 
-	for _, d := range unStructOjb.Items {
+	for _, d := range unStructObj.Items {
 		fmt.Printf("%s\n", d.GetName())
 	}
 
