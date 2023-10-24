@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	crdClient "github.com/meiyingshe/k8scrd/client"
-	"github.com/meiyingshe/k8scrd/crd"
-	"github.com/meiyingshe/k8scrd/prometheus"
+	crdClient "github.com/changqings/k8scrd/client"
+	"github.com/changqings/k8scrd/crd"
+	"github.com/changqings/k8scrd/prometheus"
 	p8smonitorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,7 +15,7 @@ import (
 )
 
 func main() {
-	dI := crdClient.GetDynamicClient()
+	dynClient := crdClient.GetDynamicClient()
 	fmt.Println("Runnig main ...")
 
 	// with runtime client
@@ -30,7 +30,7 @@ func main() {
 
 	fmt.Println("get p8srules with dynamic client")
 	// with dynamic client
-	if err := prometheus.GetP8sRule(dI, "", "prometheus"); err != nil {
+	if err := prometheus.GetP8sRule(dynClient, "", "prometheus"); err != nil {
 		fmt.Printf("%v\n", err)
 	}
 
@@ -45,7 +45,7 @@ func main() {
 	vs := &crd.Crds{
 		Namespace: "shencq",
 		Gvr:       vsGvr,
-		Client:    dI,
+		Client:    dynClient,
 	}
 
 	vsName := "nginx-vs"

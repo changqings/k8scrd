@@ -15,14 +15,15 @@ import (
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// get istio client
 func GetIstioClient() *istioVersioned.Clientset {
 	return istioVersioned.NewForConfigOrDie(GetRestConfig())
 }
 
+// get runtime client
 func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
 	config := GetRestConfig()
 	// creates the clientset, default behavor
-
 	client, err := runtimeclient.New(config, runtimeclient.Options{
 		Scheme: r,
 	})
@@ -32,6 +33,7 @@ func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
 	return client
 }
 
+// get dynamic client with Context
 func GetDynamicClientWithContext(contextName string) dynamic.Interface {
 	var config *rest.Config
 
@@ -54,13 +56,14 @@ func GetDynamicClientWithContext(contextName string) dynamic.Interface {
 		}
 	}
 	// creates the clientset, default behavor
-
 	dynaClient, err := dynamic.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}
 	return dynaClient
 }
+
+// get dyn client for use dynamic Interface
 func GetDynamicClient() dynamic.Interface {
 	config := GetRestConfig()
 	// creates the clientset, default behavor
@@ -72,6 +75,8 @@ func GetDynamicClient() dynamic.Interface {
 	return dynaClient
 }
 
+// k8s api client with set-context = contextName
+// configPath equal merged kubeconfigs, example dev, prod, test
 func GetClientWithContext(contextName string, configPath string) *kubernetes.Clientset {
 	var config *rest.Config
 	var err error
@@ -100,6 +105,8 @@ func GetClientWithContext(contextName string, configPath string) *kubernetes.Cli
 	}
 	return clientset
 }
+
+// k8s api client
 func GetClient() *kubernetes.Clientset {
 	config := GetRestConfig()
 	// creates the clientset, default behavor
@@ -111,23 +118,30 @@ func GetClient() *kubernetes.Clientset {
 	return clientset
 }
 
+// if configPath existed, use it first
+// or use ENV KUBECONFIG
 func GetKubeConfig(configPath ...string) string {
-	var kubeconfig string
 
-	if len(configPath) == 1 {
+	var kubeconfig string
+	homeDir := homedir.HomeDir()
+	ENV_KUBUCONFIG := os.Getenv("KUBECONFIG")
+
+	switch {
+	case len(configPath) == 1:
 		kubeconfig = configPath[0]
-	} else if os.Getenv("KUBECONFIG") != "" {
-		kubeconfig = filepath.Join(os.Getenv("KUBECONFIG"))
-	} else if home := homedir.HomeDir(); home != "" {
-		kubeconfig = filepath.Join(home, ".kube", "config")
-	} else {
+	case len(ENV_KUBUCONFIG) > 0:
+		kubeconfig = filepath.Join(ENV_KUBUCONFIG)
+	case len(homeDir) > 0:
+		kubeconfig = filepath.Join(homeDir)
+	default:
 		kubeconfig = ""
 	}
 
 	return kubeconfig
-
 }
 
+// get rest config, if you want use for other resources
+// Example: istioClient
 func GetRestConfig() *rest.Config {
 
 	kubeconfig := GetKubeConfig()
