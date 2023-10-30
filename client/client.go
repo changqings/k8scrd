@@ -132,7 +132,7 @@ func GetKubeConfig(configPath ...string) string {
 	case len(ENV_KUBUCONFIG) > 0:
 		kubeconfig = filepath.Join(ENV_KUBUCONFIG)
 	case len(homeDir) > 0:
-		kubeconfig = filepath.Join(homeDir)
+		kubeconfig = filepath.Join(homeDir, ".kube", "config")
 	default:
 		kubeconfig = ""
 	}
