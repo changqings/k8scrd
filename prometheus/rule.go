@@ -12,7 +12,7 @@ import (
 	"k8s.io/client-go/dynamic"
 )
 
-func GetP8sRule(dI dynamic.Interface, name, ns string) error {
+func GetP8sRule(dynClient *dynamic.DynamicClient, name, ns string) error {
 	// get gvr prometheusrulers
 	gvr := schema.GroupVersionResource{
 		Group:    "monitoring.coreos.com",
@@ -20,7 +20,7 @@ func GetP8sRule(dI dynamic.Interface, name, ns string) error {
 		Resource: "prometheusrules",
 	}
 
-	unStructObj, err := dI.Resource(gvr).Namespace(ns).List(context.Background(), metav1.ListOptions{})
+	unStructObj, err := dynClient.Resource(gvr).Namespace(ns).List(context.Background(), metav1.ListOptions{})
 	if err != nil {
 		return err
 	}

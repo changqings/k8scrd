@@ -34,7 +34,7 @@ func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
 }
 
 // get dynamic client with Context
-func GetDynamicClientWithContext(contextName string) dynamic.Interface {
+func GetDynamicClientWithContext(contextName string) *dynamic.DynamicClient {
 	var config *rest.Config
 
 	var err error
@@ -63,8 +63,8 @@ func GetDynamicClientWithContext(contextName string) dynamic.Interface {
 	return dynaClient
 }
 
-// get dyn client for use dynamic Interface
-func GetDynamicClient() dynamic.Interface {
+// get dyn client for use dynamic DynamicClient
+func GetDynamicClient() *dynamic.DynamicClient {
 	config := GetRestConfig()
 	// creates the clientset, default behavor
 

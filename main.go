@@ -36,7 +36,7 @@ func main() {
 
 	// get vs crds
 	fmt.Printf("get vs with dynamic client")
-	vsGvr := schema.GroupVersionResource{
+	vsGVR := schema.GroupVersionResource{
 		Group:    "networking.istio.io",
 		Version:  "v1beta1",
 		Resource: "virtualservices",
@@ -44,7 +44,7 @@ func main() {
 
 	vs := &crd.Crds{
 		Namespace: "shencq",
-		Gvr:       vsGvr,
+		GVR:       vsGVR,
 		Client:    dynClient,
 	}
 

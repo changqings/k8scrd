@@ -13,17 +13,17 @@ import (
 )
 
 type Crds struct {
-	Client    dynamic.Interface
+	Client    *dynamic.DynamicClient
 	Namespace string
-	Gvr       schema.GroupVersionResource
+	GVR       schema.GroupVersionResource
 }
 
 func (c *Crds) Get(ctx context.Context, name string, opts metav1.GetOptions) (*unstructured.Unstructured, error) {
-	return c.Client.Resource(c.Gvr).Namespace(c.Namespace).Get(ctx, name, opts)
+	return c.Client.Resource(c.GVR).Namespace(c.Namespace).Get(ctx, name, opts)
 }
 
 func (c *Crds) List(ctx context.Context, opts metav1.ListOptions) (*unstructured.UnstructuredList, error) {
-	return c.Client.Resource(c.Gvr).Namespace(c.Namespace).List(ctx, opts)
+	return c.Client.Resource(c.GVR).Namespace(c.Namespace).List(ctx, opts)
 }
 
 func (c *Crds) Create(ctx context.Context, data interface{}, opts metav1.CreateOptions) (*unstructured.Unstructured, error) {
@@ -32,7 +32,7 @@ func (c *Crds) Create(ctx context.Context, data interface{}, opts metav1.CreateO
 		return nil, fmt.Errorf("can not parse data =%v to *unstructured.Unstructured", data)
 	}
 
-	return c.Client.Resource(c.Gvr).Namespace(c.Namespace).Create(ctx, obj, opts)
+	return c.Client.Resource(c.GVR).Namespace(c.Namespace).Create(ctx, obj, opts)
 }
 
 func (c *Crds) Update(ctx context.Context, data interface{}, opts metav1.UpdateOptions) (
@@ -41,21 +41,21 @@ func (c *Crds) Update(ctx context.Context, data interface{}, opts metav1.UpdateO
 	if !ok {
 		return nil, fmt.Errorf("can not parse data =%v to *unstructured.Unstructured obj", data)
 	}
-	return c.Client.Resource(c.Gvr).Update(ctx, obj, opts)
+	return c.Client.Resource(c.GVR).Update(ctx, obj, opts)
 }
 
 func (c *Crds) Delete(ctx context.Context, name string, opts metav1.DeleteOptions) error {
-	return c.Client.Resource(c.Gvr).Delete(ctx, name, opts)
+	return c.Client.Resource(c.GVR).Delete(ctx, name, opts)
 }
 
 func (c *Crds) Patch(ctx context.Context, name string, pt types.PatchType, date []byte, opts metav1.PatchOptions) (
 	*unstructured.Unstructured,
 	error,
 ) {
-	return c.Client.Resource(c.Gvr).Namespace(c.Namespace).Patch(ctx, name, pt, date, opts)
+	return c.Client.Resource(c.GVR).Namespace(c.Namespace).Patch(ctx, name, pt, date, opts)
 }
 
 func (c *Crds) Watch(ctx context.Context, opts metav1.ListOptions) (watch.Interface, error) {
 	opts.Watch = true
-	return c.Client.Resource(c.Gvr).Namespace(c.Namespace).Watch(ctx, opts)
+	return c.Client.Resource(c.GVR).Namespace(c.Namespace).Watch(ctx, opts)
 }
