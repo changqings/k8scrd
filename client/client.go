@@ -22,9 +22,10 @@ func GetIstioClient() *istioVersioned.Clientset {
 
 // get runtime client
 func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
-	config := GetRestConfig()
+	resConfig := GetRestConfig()
+
 	// creates the clientset, default behavor
-	client, err := runtimeclient.New(config, runtimeclient.Options{
+	client, err := runtimeclient.New(resConfig, runtimeclient.Options{
 		Scheme: r,
 	})
 	if err != nil {
@@ -35,17 +36,17 @@ func GetRuntimeClient(r *runtime.Scheme) runtimeclient.Client {
 
 // get dynamic client with Context
 func GetDynamicClientWithContext(contextName string) *dynamic.DynamicClient {
-	var config *rest.Config
+	var resConfig *rest.Config
 
 	var err error
 
 	kubeconfig := GetKubeConfig()
-	if fileExist(kubeconfig) {
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+	if fileIsExist(kubeconfig) {
+		resConfig, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if contextName != "" {
 			configLoadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig}
 			configOverrides := &clientcmd.ConfigOverrides{CurrentContext: contextName}
-			config, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
+			resConfig, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
 
 			if err != nil {
 				klog.Errorf("Switch kubeconfig context err: ", err)
@@ -56,7 +57,7 @@ func GetDynamicClientWithContext(contextName string) *dynamic.DynamicClient {
 		}
 	}
 	// creates the clientset, default behavor
-	dynaClient, err := dynamic.NewForConfig(config)
+	dynaClient, err := dynamic.NewForConfig(resConfig)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -65,29 +66,29 @@ func GetDynamicClientWithContext(contextName string) *dynamic.DynamicClient {
 
 // get dyn client for use dynamic DynamicClient
 func GetDynamicClient() *dynamic.DynamicClient {
-	config := GetRestConfig()
+	resConfig := GetRestConfig()
 	// creates the clientset, default behavor
 
-	dynaClient, err := dynamic.NewForConfig(config)
+	dynClient, err := dynamic.NewForConfig(resConfig)
 	if err != nil {
 		panic(err.Error())
 	}
-	return dynaClient
+	return dynClient
 }
 
 // k8s api client with set-context = contextName
 // configPath equal merged kubeconfigs, example dev, prod, test
 func GetClientWithContext(contextName string, configPath string) *kubernetes.Clientset {
-	var config *rest.Config
+	var resConfig *rest.Config
 	var err error
 
 	kubeconfig := GetKubeConfig(configPath)
-	if fileExist(kubeconfig) {
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+	if fileIsExist(kubeconfig) {
+		resConfig, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if contextName != "" {
 			configLoadingRules := &clientcmd.ClientConfigLoadingRules{ExplicitPath: kubeconfig}
 			configOverrides := &clientcmd.ConfigOverrides{CurrentContext: contextName}
-			config, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
+			resConfig, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
 
 			if err != nil {
 				klog.Errorf("Switch kubeconfig context err: ", err)
@@ -99,7 +100,7 @@ func GetClientWithContext(contextName string, configPath string) *kubernetes.Cli
 	}
 	// creates the clientset, default behavor
 
-	clientset, err := kubernetes.NewForConfig(config)
+	clientset, err := kubernetes.NewForConfig(resConfig)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -108,10 +109,10 @@ func GetClientWithContext(contextName string, configPath string) *kubernetes.Cli
 
 // k8s api client
 func GetClient() *kubernetes.Clientset {
-	config := GetRestConfig()
+	resConfig := GetRestConfig()
 	// creates the clientset, default behavor
 
-	clientset, err := kubernetes.NewForConfig(config)
+	clientset, err := kubernetes.NewForConfig(resConfig)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -145,26 +146,26 @@ func GetKubeConfig(configPath ...string) string {
 func GetRestConfig() *rest.Config {
 
 	kubeconfig := GetKubeConfig()
-	var config *rest.Config
+	var resConfig *rest.Config
 	var err error
 
-	if fileExist(kubeconfig) {
-		config, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
+	if fileIsExist(kubeconfig) {
+		resConfig, err = clientcmd.BuildConfigFromFlags("", kubeconfig)
 		if err != nil {
 			panic(err)
 		}
 	} else {
 		// creates the in-cluster config
-		config, err = rest.InClusterConfig()
+		resConfig, err = rest.InClusterConfig()
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	return config
+	return resConfig
 }
 
-func fileExist(path string) bool {
+func fileIsExist(path string) bool {
 	_, err := os.Lstat(path)
 	return !os.IsNotExist(err)
 }

@@ -35,9 +35,9 @@ func GetP8sRule(dynClient *dynamic.DynamicClient, name, ns string) error {
 
 func GetP8sRuleList(rClient client.Client) *p8smonitorv1.PrometheusRuleList {
 
+	// register scheme in runtime, add in main.go
 	// ruleScheme := runtime.NewScheme()
 	// p8smonitorv1.AddToScheme(ruleScheme)
-
 	// rClient := k8scrdclient.GetRuntimeClient(ruleScheme)
 
 	p8sRule := &p8smonitorv1.PrometheusRuleList{}
