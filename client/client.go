@@ -49,7 +49,7 @@ func GetDynamicClientWithContext(contextName string) *dynamic.DynamicClient {
 			resConfig, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
 
 			if err != nil {
-				klog.Errorf("Switch kubeconfig context err: ", err)
+				klog.Errorf("Switch kubeconfig context err: %v", err)
 			}
 		}
 		if err != nil {
@@ -91,7 +91,7 @@ func GetClientWithContext(contextName string, configPath string) *kubernetes.Cli
 			resConfig, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
 
 			if err != nil {
-				klog.Errorf("Switch kubeconfig context err: ", err)
+				klog.Errorf("Switch kubeconfig context err:  %v", err)
 			}
 		}
 		if err != nil {
@@ -112,11 +112,11 @@ func GetClient() *kubernetes.Clientset {
 	resConfig := GetRestConfig()
 	// creates the clientset, default behavor
 
-	clientset, err := kubernetes.NewForConfig(resConfig)
+	clientSet, err := kubernetes.NewForConfig(resConfig)
 	if err != nil {
 		panic(err.Error())
 	}
-	return clientset
+	return clientSet
 }
 
 // if configPath existed, use it first

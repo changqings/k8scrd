@@ -47,7 +47,7 @@ func main() {
 	}
 
 	vsName := "nginx-vs"
-	vs := &crd.Crds{
+	vs := &crd.Client{
 		Namespace: "shencq",
 		GVR:       vsGVR,
 		Client:    dynClient,
