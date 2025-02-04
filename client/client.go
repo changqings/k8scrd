@@ -23,13 +23,6 @@ type Client struct {
 	RestConfig *rest.Config
 	// kube clientset
 	KubeClient *kubernetes.Clientset
-
-	// istio clientset
-	IstioClient *istioVersioned.Clientset
-	// runtime client
-	RuntimeClient *runtimeclient.Client
-	// dynamic client
-	DynamicClient *dynamic.DynamicClient
 }
 
 func NewClient() (*Client, error) {
