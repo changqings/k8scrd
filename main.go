@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 
-	crdClient "github.com/changqings/k8scrd/client"
+	"github.com/changqings/k8scrd/client"
 	"github.com/changqings/k8scrd/crd"
 	"github.com/changqings/k8scrd/prometheus"
 	p8smonitorv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -15,9 +16,7 @@ import (
 )
 
 var (
-	// register runtime client
-	dynClient  = crdClient.GetDynamicClient()
-	ruleScheme = runtime.NewScheme()
+	runtimeshceme = runtime.NewScheme()
 )
 
 func main() {
@@ -25,9 +24,23 @@ func main() {
 
 	// take prometheusRules as example
 	// use k8s dyn client
-	p8smonitorv1.AddToScheme(ruleScheme)
-	rClient := crdClient.GetRuntimeClient(ruleScheme)
+	client, err := client.NewClient()
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	dynClient, err := client.GetDynamicClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	p8smonitorv1.AddToScheme(runtimeshceme)
+	rClient, err := client.GetRuntimeClient(runtimeshceme)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// list prometheusRules
 	list := prometheus.GetP8sRuleList(rClient)
 	for _, v := range list.Items {
 		fmt.Printf("%s\n", v.Name)
@@ -39,7 +52,7 @@ func main() {
 	}
 	fmt.Printf("get vs with dynamic client")
 
-	// istio virtualService example
+	// istio virtualService use dynamic client
 	vsGVR := schema.GroupVersionResource{
 		Group:    "networking.istio.io",
 		Version:  "v1beta1",
@@ -47,13 +60,13 @@ func main() {
 	}
 
 	vsName := "nginx-vs"
-	vs := &crd.Client{
+	vs := &crd.CrdClient{
 		Namespace: "shencq",
 		GVR:       vsGVR,
 		Client:    dynClient,
 	}
 
-	// get vs
+	// vs get
 	unobj, err := vs.Get(context.Background(), vsName, metav1.GetOptions{})
 	if err != nil {
 		fmt.Printf("get vs unobj error %v\n", err)
@@ -70,7 +83,7 @@ func main() {
 		}
 	}
 
-	// create vs
+	// vs create wiht unstructured obj, best to use istio api client, but here just for demo
 	vsUnObj := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"apiVersion": "networking.istio.io/v1beta1",
@@ -99,9 +112,9 @@ func main() {
 		},
 	}
 
-	_, errCreateVs := vs.Create(context.Background(), vsUnObj, metav1.CreateOptions{})
-	if errCreateVs != nil {
-		fmt.Printf("create vs err: %v\n", errCreateVs)
+	_, err = vs.Create(context.Background(), vsUnObj, metav1.CreateOptions{})
+	if err != nil {
+		fmt.Printf("create vs err: %v\n", err)
 	}
 
 }
