@@ -29,7 +29,7 @@ func NewClient() (*Client, error) {
 
 	kubeConfig := GetKubeConfig()
 
-	restConfig, err := GetRestConfig()
+	restConfig, err := GetRestConfig(kubeConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -151,9 +151,8 @@ func GetKubeConfig(configPath ...string) string {
 
 // get rest config, if you want use for other resources
 // Example: istioClient
-func GetRestConfig() (*rest.Config, error) {
+func GetRestConfig(kubeconfig string) (*rest.Config, error) {
 
-	kubeconfig := GetKubeConfig()
 	var resConfig *rest.Config
 	var err error
 
