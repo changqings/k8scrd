@@ -12,7 +12,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
-	"k8s.io/klog/v2"
 	runtimeclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -103,7 +102,6 @@ func (c *Client) GetClientSetWithContext(contextName string) (*kubernetes.Client
 
 		restConfig, err = clientcmd.NewNonInteractiveDeferredLoadingClientConfig(configLoadingRules, configOverrides).ClientConfig()
 		if err != nil {
-			klog.Errorf("Switch kubeconfig context err:  %v", err)
 			slog.Error("Switch kubeconfig context err", "msg", err)
 			return nil, err
 		}
